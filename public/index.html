@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Student & Faculty Portal — Manage your academic and professional information in one place.">
+  <title>Student & Faculty Portal</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="hero">
+    <!-- Nav -->
+    <nav class="hero-nav">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:38px;height:38px;background:linear-gradient(135deg,#2563EB,#6366f1);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+          <span style="font-size:18px;">🎓</span>
+        </div>
+        <div>
+          <div style="font-size:15px;font-weight:800;color:#0f172a;letter-spacing:-0.3px;">UniPortal</div>
+          <div style="font-size:11px;color:#94a3b8;font-weight:500;">Database Systems Project</div>
+        </div>
+      </div>
+      <div style="font-size:13px;color:#64748b;font-weight:500;">March 2026 — SRD v1.0</div>
+    </nav>
+
+    <!-- Hero Body -->
+    <div class="hero-body">
+      <span class="hero-badge">🏫 Academic Management System</span>
+
+      <h1 class="hero-title">
+        One Portal.<br>
+        <span>Two Worlds.</span>
+      </h1>
+      <p class="hero-subtitle">
+        A unified web platform for students to manage academic records and faculty to oversee professional information — all backed by a secure relational database.
+      </p>
+
+      <div class="portal-cards">
+        <!-- Student Card -->
+        <a href="student-login.html" class="portal-card student">
+          <div class="card-icon">
+            <span style="font-size:34px;">🎒</span>
+          </div>
+          <h3>Student Portal</h3>
+          <p>Register, view your academic profile, manage GPA, and track your enrolled courses.</p>
+          <div class="card-link">Enter Student Portal →</div>
+        </a>
+
+        <!-- Faculty Card -->
+        <a href="faculty-login.html" class="portal-card faculty">
+          <div class="card-icon">
+            <span style="font-size:34px;">👨‍🏫</span>
+          </div>
+          <h3>Faculty Portal</h3>
+          <p>Register, manage your professional profile, and browse the full student directory.</p>
+          <div class="card-link">Enter Faculty Portal →</div>
+        </a>
+      </div>
+
+      <!-- Footer note -->
+      <p style="margin-top:48px;font-size:13px;color:#94a3b8;position:relative;z-index:1;">
+        Powered by Node.js · Express · MySQL · JWT Auth
+      </p>
+    </div>
+  </div>
+</body>
+</html>

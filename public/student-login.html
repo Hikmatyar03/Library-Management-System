@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Login — UniPortal</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="api.js"></script>
+</head>
+
+<body>
+    <div class="page-center">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <div class="icon">🎒</div>
+                <h2>Welcome Back</h2>
+                <p>Sign in to your Student Portal</p>
+            </div>
+
+            <div id="alertBox" class="alert alert-error alert-hidden" role="alert"></div>
+
+            <form id="loginForm" novalidate>
+                <div class="form-group">
+                    <label for="email">Email Address <span class="required">*</span></label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="your@university.edu"
+                        autocomplete="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password <span class="required">*</span></label>
+                    <input type="password" id="password" name="password" class="form-control"
+                        placeholder="Enter your password" autocomplete="current-password" required>
+                </div>
+
+                <button type="submit" id="submitBtn" class="btn btn-primary" style="margin-top:8px;">
+                    Sign In to Student Portal
+                </button>
+            </form>
+
+            <div class="divider">or</div>
+
+            <div class="text-center">
+                <p class="text-muted">Don't have an account?
+                    <a href="student-register.html" style="font-weight:600;">Register here</a>
+                </p>
+                <p class="text-muted mt-4">
+                    <a href="index.html" style="color:#94a3b8;">← Back to Home</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast"></div>
+
+    <script>
+        // Redirect if already logged in
+        if (Auth.isLoggedIn() && Auth.getRole() === 'student') {
+            window.location.href = 'student-dashboard.html';
+        }
+
+        function showAlert(msg, type = 'error') {
+            const box = document.getElementById('alertBox');
+            box.className = `alert alert-${type}`;
+            box.textContent = msg;
+        }
+        function hideAlert() {
+            document.getElementById('alertBox').className = 'alert alert-error alert-hidden';
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideAlert();
+
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!email || !password) {
+                showAlert('Please enter your email and password.');
+                return;
+            }
+
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Signing in…';
+
+            const res = await StudentAPI.login({ email, password });
+
+            if (!res) return; // Handled by apiFetch (redirect)
+
+            if (res.ok) {
+                Auth.setToken(res.data.token);
+                Auth.setRole('student');
+                window.location.href = 'student-dashboard.html';
+            } else {
+                showAlert(res.data.error || 'Login failed. Please try again.');
+                btn.disabled = false;
+                btn.textContent = 'Sign In to Student Portal';
+            }
+        });
+    </script>
+</body>
+
+</html>

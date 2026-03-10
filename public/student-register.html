@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration — UniPortal</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="api.js" defer></script>
+</head>
+
+<body>
+    <div class="page-center" style="padding: 60px 24px;">
+        <div class="auth-card card-md">
+            <div class="auth-logo">
+                <div class="icon">🎒</div>
+                <h2>Create Student Account</h2>
+                <p>Join the Student Portal — it's free</p>
+            </div>
+
+            <div id="alertBox" class="alert alert-error alert-hidden" role="alert"></div>
+
+            <form id="registerForm" novalidate>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="full_name">Full Name <span class="required">*</span></label>
+                        <input type="text" id="full_name" name="full_name" class="form-control" placeholder="Ali Hassan"
+                            autocomplete="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="student_id">Student ID <span class="required">*</span></label>
+                        <input type="text" id="student_id" name="student_id" class="form-control"
+                            placeholder="STU-2024-001" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address <span class="required">*</span></label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="ali@university.edu"
+                        autocomplete="email" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="password">Password <span class="required">*</span></label>
+                        <input type="password" id="password" name="password" class="form-control"
+                            placeholder="Min 8 characters" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm_password">Confirm Password <span class="required">*</span></label>
+                        <input type="password" id="confirm_password" class="form-control" placeholder="Repeat password">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="program">Program / Major <span class="required">*</span></label>
+                    <input type="text" id="program" name="program" class="form-control"
+                        placeholder="Bachelor of Computer Science" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="enrollment_year">Enrollment Year <span class="required">*</span></label>
+                        <input type="number" id="enrollment_year" name="enrollment_year" class="form-control"
+                            placeholder="2024" min="2000" max="2030" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" class="form-control" placeholder="+92 300 0000000">
+                    </div>
+                </div>
+
+                <button type="submit" id="submitBtn" class="btn btn-primary" style="margin-top:8px;">
+                    Create Student Account
+                </button>
+            </form>
+
+            <div class="divider">or</div>
+            <div class="text-center">
+                <p class="text-muted">Already have an account?
+                    <a href="student-login.html" style="font-weight:600;">Sign in here</a>
+                </p>
+                <p class="text-muted mt-4">
+                    <a href="index.html" style="color:#94a3b8;">← Back to Home</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <script>
+        function showAlert(msg, type = 'error') {
+            const box = document.getElementById('alertBox');
+            box.className = `alert alert-${type}`;
+            box.textContent = msg;
+            box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        function hideAlert() {
+            document.getElementById('alertBox').className = 'alert alert-error alert-hidden';
+        }
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            t.className = `show toast-${type}`;
+            t.textContent = (type === 'success' ? '✅ ' : '❌ ') + msg;
+            setTimeout(() => { t.className = ''; }, 3500);
+        }
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideAlert();
+
+            const full_name = document.getElementById('full_name').value.trim();
+            const student_id = document.getElementById('student_id').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirm_password = document.getElementById('confirm_password').value;
+            const program = document.getElementById('program').value.trim();
+            const enrollment_year = document.getElementById('enrollment_year').value;
+            const phone = document.getElementById('phone').value.trim();
+
+            // Client-side validation
+            if (!full_name || !student_id || !email || !password || !program || !enrollment_year) {
+                showAlert('Please fill in all required fields.'); return;
+            }
+            if (password.length < 8) {
+                showAlert('Password must be at least 8 characters.'); return;
+            }
+            if (password !== confirm_password) {
+                showAlert('Passwords do not match.'); return;
+            }
+            const emailRx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRx.test(email)) {
+                showAlert('Please enter a valid email address.'); return;
+            }
+
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Creating account…';
+
+            const res = await StudentAPI.register({
+                student_id, full_name, email, password, program, enrollment_year, phone
+            });
+
+            if (!res) return;
+
+            if (res.ok) {
+                showToast('Account created! Redirecting to login…');
+                setTimeout(() => window.location.href = 'student-login.html', 1800);
+            } else {
+                showAlert(res.data.error || 'Registration failed. Please try again.');
+                btn.disabled = false;
+                btn.textContent = 'Create Student Account';
+            }
+        });
+    </script>
+</body>
+
+</html>

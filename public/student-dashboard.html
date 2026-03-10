@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard — UniPortal</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="api.js"></script>
+</head>
+
+<body class="dashboard-body">
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="index.html" class="navbar-brand">
+            <span class="brand-icon">🎒</span>
+            Student Portal
+        </a>
+        <div class="navbar-user">
+            <span class="user-name" id="navName">Loading…</span>
+            <button onclick="doLogout()" class="btn btn-sm"
+                style="background:rgba(255,255,255,0.18);color:#fff;border:1px solid rgba(255,255,255,0.3);">
+                🚪 Logout
+            </button>
+        </div>
+    </nav>
+
+    <!-- Dashboard Content -->
+    <div class="dashboard-wrap">
+        <div class="dashboard-grid">
+
+            <!-- LEFT: Profile Card -->
+            <div>
+                <div class="profile-card" id="profileCard">
+                    <div class="profile-card-header">
+                        <div class="profile-avatar" id="avatarInitials">…</div>
+                        <div class="profile-name" id="profileName">Loading…</div>
+                        <div class="profile-badge" id="profileProgram">—</div>
+                    </div>
+                    <div class="profile-card-body">
+                        <div class="info-row">
+                            <span class="info-label">Student ID</span>
+                            <span class="info-value" id="piStudentId">—</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Email</span>
+                            <span class="info-value" id="piEmail" style="font-size:13px;">—</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Enroll Year</span>
+                            <span class="info-value" id="piEnrollYear">—</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Phone</span>
+                            <span class="info-value" id="piPhone">—</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Member Since</span>
+                            <span class="info-value" id="piCreatedAt">—</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Academic Info + Edit -->
+            <div>
+                <!-- Stats -->
+                <div class="stats-row" id="statsRow">
+                    <div class="stat-pill">
+                        <div class="stat-value" id="statGPA">—</div>
+                        <div class="stat-label">GPA</div>
+                    </div>
+                    <div class="stat-pill">
+                        <div class="stat-value" id="statSemester">—</div>
+                        <div class="stat-label">Semester</div>
+                    </div>
+                    <div class="stat-pill">
+                        <div class="stat-value" id="statYear">—</div>
+                        <div class="stat-label">Year of Entry</div>
+                    </div>
+                </div>
+
+                <!-- Academic Info Card -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <span class="icon">📚</span>
+                            <h3>Academic Information</h3>
+                        </div>
+                        <button id="editToggleBtn" onclick="toggleEdit()" class="btn btn-secondary btn-sm">
+                            ✏️ Edit Profile
+                        </button>
+                    </div>
+                    <div class="section-body">
+                        <!-- View Mode -->
+                        <div id="viewMode">
+                            <div class="info-row">
+                                <span class="info-label">Program</span>
+                                <span class="info-value" id="aiProgram">—</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Semester</span>
+                                <span class="info-value" id="aiSemester">—</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">GPA</span>
+                                <span class="info-value highlight" id="aiGPA">—</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Phone</span>
+                                <span class="info-value" id="aiPhone">—</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Last Updated</span>
+                                <span class="info-value" id="aiUpdatedAt">—</span>
+                            </div>
+                        </div>
+
+                        <!-- Edit Mode -->
+                        <div id="editMode" class="edit-form-wrap">
+                            <div id="editAlert" class="alert alert-error alert-hidden"></div>
+                            <form id="editForm" novalidate>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Student ID</label>
+                                        <input type="text" class="form-control" id="efStudentId" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Email</label>
+                                        <input type="email" class="form-control" id="efEmail" readonly>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Enrollment Year</label>
+                                        <input type="text" class="form-control" id="efEnrollYear" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="efPhone">Phone Number</label>
+                                        <input type="tel" id="efPhone" class="form-control"
+                                            placeholder="+92 300 0000000">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="efProgram">Program / Major</label>
+                                    <input type="text" id="efProgram" class="form-control"
+                                        placeholder="Bachelor of Computer Science">
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="efSemester">Current Semester (1–8)</label>
+                                        <input type="number" id="efSemester" class="form-control" min="1" max="8"
+                                            placeholder="e.g. 4">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="efGPA">GPA (0.00–4.00)</label>
+                                        <input type="number" id="efGPA" class="form-control" min="0" max="4" step="0.01"
+                                            placeholder="e.g. 3.75">
+                                    </div>
+                                </div>
+                                <div style="display:flex;gap:12px;margin-top:8px;">
+                                    <button type="submit" id="saveBtn" class="btn btn-primary" style="flex:1;">
+                                        💾 Save Changes
+                                    </button>
+                                    <button type="button" onclick="toggleEdit()" class="btn btn-outline"
+                                        style="flex:1;">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <script>
+        // Auth guard
+        if (!Auth.isLoggedIn() || Auth.getRole() !== 'student') {
+            window.location.href = 'student-login.html';
+        }
+
+        let studentData = null;
+
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            t.className = `show toast-${type}`;
+            t.textContent = (type === 'success' ? '✅ ' : '❌ ') + msg;
+            setTimeout(() => { t.className = ''; }, 3500);
+        }
+
+        function fmtDate(d) {
+            if (!d) return '—';
+            return new Date(d).toLocaleDateString('en-PK', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
+        function renderProfile(s) {
+            studentData = s;
+            const initials = s.full_name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+            document.getElementById('avatarInitials').textContent = initials;
+            document.getElementById('navName').textContent = s.full_name;
+            document.getElementById('profileName').textContent = s.full_name;
+            document.getElementById('profileProgram').textContent = s.program;
+            document.getElementById('piStudentId').textContent = s.student_id;
+            document.getElementById('piEmail').textContent = s.email;
+            document.getElementById('piEnrollYear').textContent = s.enrollment_year;
+            document.getElementById('piPhone').textContent = s.phone || 'Not provided';
+            document.getElementById('piCreatedAt').textContent = fmtDate(s.created_at);
+            document.getElementById('statGPA').textContent = parseFloat(s.gpa).toFixed(2);
+            document.getElementById('statSemester').textContent = s.current_semester;
+            document.getElementById('statYear').textContent = s.enrollment_year;
+            document.getElementById('aiProgram').textContent = s.program;
+            document.getElementById('aiSemester').textContent = `Semester ${s.current_semester}`;
+            document.getElementById('aiGPA').textContent = parseFloat(s.gpa).toFixed(2);
+            document.getElementById('aiPhone').textContent = s.phone || 'Not provided';
+            document.getElementById('aiUpdatedAt').textContent = fmtDate(s.updated_at);
+        }
+
+        async function loadProfile() {
+            const res = await StudentAPI.getProfile();
+            if (res && res.ok) {
+                renderProfile(res.data);
+            } else {
+                showToast('Failed to load profile.', 'error');
+            }
+        }
+
+        function toggleEdit() {
+            const viewMode = document.getElementById('viewMode');
+            const editMode = document.getElementById('editMode');
+            const btn = document.getElementById('editToggleBtn');
+            const isEditing = editMode.classList.contains('active');
+            if (isEditing) {
+                editMode.classList.remove('active');
+                viewMode.style.display = '';
+                btn.textContent = '✏️ Edit Profile';
+            } else {
+                // Pre-fill edit form
+                if (studentData) {
+                    document.getElementById('efStudentId').value = studentData.student_id;
+                    document.getElementById('efEmail').value = studentData.email;
+                    document.getElementById('efEnrollYear').value = studentData.enrollment_year;
+                    document.getElementById('efPhone').value = studentData.phone || '';
+                    document.getElementById('efProgram').value = studentData.program;
+                    document.getElementById('efSemester').value = studentData.current_semester;
+                    document.getElementById('efGPA').value = studentData.gpa;
+                }
+                viewMode.style.display = 'none';
+                editMode.classList.add('active');
+                btn.textContent = '✖ Cancel';
+            }
+        }
+
+        document.getElementById('editForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const editAlert = document.getElementById('editAlert');
+            editAlert.className = 'alert alert-error alert-hidden';
+
+            const phone = document.getElementById('efPhone').value.trim();
+            const program = document.getElementById('efProgram').value.trim();
+            const current_semester = document.getElementById('efSemester').value;
+            const gpa = document.getElementById('efGPA').value;
+
+            // Validate
+            if (gpa && (parseFloat(gpa) < 0 || parseFloat(gpa) > 4.0)) {
+                editAlert.className = 'alert alert-error';
+                editAlert.textContent = 'GPA must be between 0.00 and 4.00.';
+                return;
+            }
+
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<span class="spinner"></span> Saving…';
+
+            const res = await StudentAPI.updateProfile({ phone, program, current_semester, gpa });
+
+            if (res && res.ok) {
+                renderProfile(res.data.student);
+                toggleEdit();
+                showToast('Profile updated successfully!');
+            } else {
+                editAlert.className = 'alert alert-error';
+                editAlert.textContent = (res && res.data.error) || 'Update failed. Please try again.';
+            }
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '💾 Save Changes';
+        });
+
+        async function doLogout() {
+            await StudentAPI.logout().catch(() => { });
+            Auth.clearToken();
+            window.location.href = 'student-login.html';
+        }
+
+        // Load profile on page load
+        loadProfile();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Dashboard — UniPortal</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="api.js"></script>
+</head>
+
+<body class="dashboard-body">
+
+    <!-- Navbar -->
+    <nav class="navbar" style="background:linear-gradient(135deg,#6366f1,#4f46e5);">
+        <a href="index.html" class="navbar-brand">
+            <span class="brand-icon">👨‍🏫</span>
+            Faculty Portal
+        </a>
+        <div class="navbar-user">
+            <span class="user-name" id="navName">Loading…</span>
+            <button onclick="doLogout()" class="btn btn-sm"
+                style="background:rgba(255,255,255,0.18);color:#fff;border:1px solid rgba(255,255,255,0.3);">
+                🚪 Logout
+            </button>
+        </div>
+    </nav>
+
+    <!-- Dashboard Content -->
+    <div class="dashboard-wrap">
+
+        <!-- Top row: Profile + Edit -->
+        <div class="dashboard-grid" style="margin-bottom:28px;">
+
+            <!-- LEFT: Profile Card -->
+            <div>
+                <div class="profile-card" id="profileCard">
+                    <div class="profile-card-header" style="background:linear-gradient(135deg,#6366f1,#4f46e5);">
+                        <div class="profile-avatar" id="avatarInitials">…</div>
+                        <div class="profile-name" id="profileName">Loading…</div>
+                        <div class="profile-badge" id="profileDesig">—</div>
+                    </div>
+                    <div class="profile-card-body">
+                        <div class="info-row">
+                            <span class="info-label">Employee ID</span>
+                            <span class="info-value" id="piEmpId">—</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Email</span>
+                            <span class="info-value" id="piEmail" style="font-size:13px;">—</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Department</span>
+                            <span class="info-value" id="piDept">—</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Office</span>
+                            <span class="info-value" id="piOffice">—</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Phone</span>
+                            <span class="info-value" id="piPhone">—</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Member Since</span>
+                            <span class="info-value" id="piCreatedAt">—</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Professional Info + Edit -->
+            <div>
+                <div class="section-card">
+                    <div class="section-header">
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <span class="icon">🏛️</span>
+                            <h3>Professional Information</h3>
+                        </div>
+                        <button id="editToggleBtn" onclick="toggleEdit()" class="btn btn-sm"
+                            style="background:#ede9fe;color:#6366f1;border:1px solid #c4b5fd;">
+                            ✏️ Edit Profile
+                        </button>
+                    </div>
+                    <div class="section-body">
+                        <!-- View Mode -->
+                        <div id="viewMode">
+                            <div class="info-row">
+                                <span class="info-label">Full Name</span>
+                                <span class="info-value" id="aiName">—</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Designation</span>
+                                <span class="info-value highlight" id="aiDesig" style="color:#6366f1;">—</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Department</span>
+                                <span class="info-value" id="aiDept">—</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Office</span>
+                                <span class="info-value" id="aiOffice">—</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Phone</span>
+                                <span class="info-value" id="aiPhone">—</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Last Updated</span>
+                                <span class="info-value" id="aiUpdatedAt">—</span>
+                            </div>
+                        </div>
+
+                        <!-- Edit Mode -->
+                        <div id="editMode" class="edit-form-wrap">
+                            <div id="editAlert" class="alert alert-error alert-hidden"></div>
+                            <form id="editForm" novalidate>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Employee ID</label>
+                                        <input type="text" class="form-control" id="efEmpId" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Email</label>
+                                        <input type="email" class="form-control" id="efEmail" readonly>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Department</label>
+                                    <input type="text" class="form-control" id="efDept" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="efDesig">Designation</label>
+                                    <select id="efDesig" class="form-control">
+                                        <option>Lecturer</option>
+                                        <option>Assistant Professor</option>
+                                        <option>Associate Professor</option>
+                                        <option>Professor</option>
+                                        <option>Visiting Lecturer</option>
+                                        <option>Lab Engineer</option>
+                                    </select>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="efOffice">Office Number</label>
+                                        <input type="text" id="efOffice" class="form-control"
+                                            placeholder="Block A, Room 201">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="efPhone">Phone Number</label>
+                                        <input type="tel" id="efPhone" class="form-control"
+                                            placeholder="+92 300 0000000">
+                                    </div>
+                                </div>
+                                <div style="display:flex;gap:12px;margin-top:8px;">
+                                    <button type="submit" id="saveBtn" class="btn btn-primary"
+                                        style="flex:1;background:linear-gradient(135deg,#6366f1,#4f46e5);">
+                                        💾 Save Changes
+                                    </button>
+                                    <button type="button" onclick="toggleEdit()" class="btn btn-outline"
+                                        style="flex:1;">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Directory Section -->
+        <div class="section-card">
+            <div class="section-header">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <span class="icon">🎒</span>
+                    <div>
+                        <h3>Student Directory</h3>
+                        <p class="text-muted text-small" style="margin:0;" id="studentCount">Loading students…</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-body">
+                <!-- Search Bar -->
+                <div class="search-wrap">
+                    <input type="text" id="searchInput" class="search-input"
+                        placeholder="🔍  Search by student name or ID…" oninput="handleSearch(this.value)">
+                    <button onclick="clearSearch()" class="btn btn-outline btn-sm">Clear</button>
+                </div>
+
+                <!-- Table -->
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Student ID</th>
+                                <th>Full Name</th>
+                                <th>Program</th>
+                                <th>Enroll Year</th>
+                                <th>Semester</th>
+                                <th>GPA</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentTableBody">
+                            <tr>
+                                <td colspan="7" class="table-empty">
+                                    <span class="spinner spinner-dark" style="margin-right:10px;"></span>
+                                    Loading students…
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination" id="paginationWrap"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="toast"></div>
+
+    <script>
+        // Auth guard
+        if (!Auth.isLoggedIn() || Auth.getRole() !== 'faculty') {
+            window.location.href = 'faculty-login.html';
+        }
+
+        let facultyData = null;
+        let currentPage = 1;
+        const PAGE_LIMIT = 10;
+        let searchTimeout = null;
+        let isSearchActive = false;
+
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            t.className = `show toast-${type}`;
+            t.textContent = (type === 'success' ? '✅ ' : '❌ ') + msg;
+            setTimeout(() => { t.className = ''; }, 3500);
+        }
+        function fmtDate(d) {
+            if (!d) return '—';
+            return new Date(d).toLocaleDateString('en-PK', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+        function gpaClass(gpa) {
+            const g = parseFloat(gpa);
+            if (g >= 3.5) return 'high';
+            if (g >= 2.5) return 'medium';
+            return 'low';
+        }
+
+        function renderFaculty(f) {
+            facultyData = f;
+            const initials = f.full_name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+            document.getElementById('avatarInitials').textContent = initials;
+            document.getElementById('navName').textContent = f.full_name;
+            document.getElementById('profileName').textContent = f.full_name;
+            document.getElementById('profileDesig').textContent = f.designation;
+            document.getElementById('piEmpId').textContent = f.employee_id;
+            document.getElementById('piEmail').textContent = f.email;
+            document.getElementById('piDept').textContent = f.department;
+            document.getElementById('piOffice').textContent = f.office_number || 'Not set';
+            document.getElementById('piPhone').textContent = f.phone || 'Not provided';
+            document.getElementById('piCreatedAt').textContent = fmtDate(f.created_at);
+            document.getElementById('aiName').textContent = f.full_name;
+            document.getElementById('aiDesig').textContent = f.designation;
+            document.getElementById('aiDept').textContent = f.department;
+            document.getElementById('aiOffice').textContent = f.office_number || 'Not set';
+            document.getElementById('aiPhone').textContent = f.phone || 'Not provided';
+            document.getElementById('aiUpdatedAt').textContent = fmtDate(f.updated_at);
+        }
+
+        async function loadProfile() {
+            const res = await FacultyAPI.getProfile();
+            if (res && res.ok) renderFaculty(res.data);
+            else showToast('Failed to load profile.', 'error');
+        }
+
+        // ── Student Table Render ───────────────────────────────────
+        function renderStudentRows(students) {
+            const tbody = document.getElementById('studentTableBody');
+            if (!students || students.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="table-empty">No students found.</td></tr>';
+                return;
+            }
+            const offset = (currentPage - 1) * PAGE_LIMIT;
+            tbody.innerHTML = students.map((s, i) => `
+      <tr>
+        <td style="color:#94a3b8;font-size:13px;">${offset + i + 1}</td>
+        <td style="font-weight:600;font-size:13px;">${s.student_id}</td>
+        <td style="font-weight:500;">${s.full_name}</td>
+        <td style="font-size:13.5px;color:#475569;">${s.program}</td>
+        <td style="font-size:13.5px;">${s.enrollment_year}</td>
+        <td style="font-size:13.5px;">Sem ${s.current_semester}</td>
+        <td><span class="gpa-badge ${gpaClass(s.gpa)}">${parseFloat(s.gpa).toFixed(2)}</span></td>
+      </tr>
+    `).join('');
+        }
+
+        function renderPagination(total, totalPages) {
+            const wrap = document.getElementById('paginationWrap');
+            if (totalPages <= 1) { wrap.innerHTML = ''; return; }
+            let html = `
+      <button class="page-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="goPage(${currentPage - 1})">‹ Prev</button>
+    `;
+            const start = Math.max(1, currentPage - 2);
+            const end = Math.min(totalPages, currentPage + 2);
+            for (let p = start; p <= end; p++) {
+                html += `<button class="page-btn ${p === currentPage ? 'active' : ''}" onclick="goPage(${p})">${p}</button>`;
+            }
+            html += `<button class="page-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="goPage(${currentPage + 1})">Next ›</button>`;
+            html += `<span class="page-info">${total} student${total !== 1 ? 's' : ''}</span>`;
+            wrap.innerHTML = html;
+        }
+
+        async function loadStudents(page = 1) {
+            currentPage = page;
+            isSearchActive = false;
+            const tbody = document.getElementById('studentTableBody');
+            tbody.innerHTML = '<tr><td colspan="7" class="table-empty"><span class="spinner spinner-dark"></span> Loading…</td></tr>';
+
+            const res = await FacultyAPI.getStudents(page, PAGE_LIMIT);
+            if (res && res.ok) {
+                const { students, pagination } = res.data;
+                renderStudentRows(students);
+                renderPagination(pagination.total, pagination.totalPages);
+                document.getElementById('studentCount').textContent = `${pagination.total} registered student${pagination.total !== 1 ? 's' : ''}`;
+            } else {
+                tbody.innerHTML = '<tr><td colspan="7" class="table-empty">Failed to load students.</td></tr>';
+            }
+        }
+
+        function goPage(page) {
+            if (isSearchActive) return; // Disable pagination during search
+            loadStudents(page);
+        }
+
+        // ── Search ─────────────────────────────────────────────────
+        function handleSearch(q) {
+            clearTimeout(searchTimeout);
+            if (!q.trim()) { clearSearch(); return; }
+            searchTimeout = setTimeout(() => doSearch(q.trim()), 350);
+        }
+
+        async function doSearch(q) {
+            isSearchActive = true;
+            const tbody = document.getElementById('studentTableBody');
+            tbody.innerHTML = '<tr><td colspan="7" class="table-empty"><span class="spinner spinner-dark"></span> Searching…</td></tr>';
+            document.getElementById('paginationWrap').innerHTML = '';
+
+            const res = await FacultyAPI.searchStudents(q);
+            if (res && res.ok) {
+                renderStudentRows(res.data.students);
+                document.getElementById('studentCount').textContent = `${res.data.total} result${res.data.total !== 1 ? 's' : ''} for "${q}"`;
+            } else {
+                tbody.innerHTML = '<tr><td colspan="7" class="table-empty">Search failed. Please try again.</td></tr>';
+            }
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            loadStudents(1);
+        }
+
+        // ── Edit Toggle ───────────────────────────────────────────
+        function toggleEdit() {
+            const viewMode = document.getElementById('viewMode');
+            const editMode = document.getElementById('editMode');
+            const btn = document.getElementById('editToggleBtn');
+            const isEditing = editMode.classList.contains('active');
+            if (isEditing) {
+                editMode.classList.remove('active');
+                viewMode.style.display = '';
+                btn.textContent = '✏️ Edit Profile';
+            } else {
+                if (facultyData) {
+                    document.getElementById('efEmpId').value = facultyData.employee_id;
+                    document.getElementById('efEmail').value = facultyData.email;
+                    document.getElementById('efDept').value = facultyData.department;
+                    document.getElementById('efDesig').value = facultyData.designation;
+                    document.getElementById('efOffice').value = facultyData.office_number || '';
+                    document.getElementById('efPhone').value = facultyData.phone || '';
+                }
+                viewMode.style.display = 'none';
+                editMode.classList.add('active');
+                btn.textContent = '✖ Cancel';
+            }
+        }
+
+        document.getElementById('editForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const editAlert = document.getElementById('editAlert');
+            editAlert.className = 'alert alert-error alert-hidden';
+
+            const designation = document.getElementById('efDesig').value;
+            const office_number = document.getElementById('efOffice').value.trim();
+            const phone = document.getElementById('efPhone').value.trim();
+
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<span class="spinner"></span> Saving…';
+
+            const res = await FacultyAPI.updateProfile({ designation, office_number, phone });
+            if (res && res.ok) {
+                renderFaculty(res.data.faculty);
+                toggleEdit();
+                showToast('Profile updated successfully!');
+            } else {
+                editAlert.className = 'alert alert-error';
+                editAlert.textContent = (res && res.data.error) || 'Update failed. Please try again.';
+            }
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '💾 Save Changes';
+        });
+
+        async function doLogout() {
+            await FacultyAPI.logout().catch(() => { });
+            Auth.clearToken();
+            window.location.href = 'faculty-login.html';
+        }
+
+        // Init
+        loadProfile();
+        loadStudents(1);
+    </script>
+</body>
+
+</html>
