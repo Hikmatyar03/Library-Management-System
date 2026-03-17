@@ -22,18 +22,13 @@
 
             <form id="loginForm" novalidate>
                 <div class="form-group">
-                    <label for="email">Email Address <span class="required">*</span></label>
-                    <input type="email" id="email" name="email" class="form-control" placeholder="your@university.edu"
-                        autocomplete="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password <span class="required">*</span></label>
-                    <input type="password" id="password" name="password" class="form-control"
-                        placeholder="Enter your password" autocomplete="current-password" required>
+                    <label for="student_id">Student ID <span class="required">*</span></label>
+                    <input type="text" id="student_id" name="student_id" class="form-control" placeholder="STU-2024-001"
+                        required>
                 </div>
 
                 <button type="submit" id="submitBtn" class="btn btn-primary" style="margin-top:8px;">
-                    Sign In to Student Portal
+                    Access Student Portal
                 </button>
             </form>
 
@@ -72,30 +67,29 @@
             e.preventDefault();
             hideAlert();
 
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
+            const student_id = document.getElementById('student_id').value.trim();
 
-            if (!email || !password) {
-                showAlert('Please enter your email and password.');
+            if (!student_id) {
+                showAlert('Please enter your Student ID.');
                 return;
             }
 
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
-            btn.innerHTML = '<span class="spinner"></span> Signing in…';
+            btn.innerHTML = '<span class="spinner"></span> Accessing portal…';
 
-            const res = await StudentAPI.login({ email, password });
+            const res = await StudentAPI.login({ student_id });
 
             if (!res) return; // Handled by apiFetch (redirect)
 
             if (res.ok) {
-                Auth.setToken(res.data.token);
+                Auth.setUserId(res.data.student_id);
                 Auth.setRole('student');
                 window.location.href = 'student-dashboard.html';
             } else {
-                showAlert(res.data.error || 'Login failed. Please try again.');
+                showAlert(res.data.error || 'Access failed. Please try again.');
                 btn.disabled = false;
-                btn.textContent = 'Sign In to Student Portal';
+                btn.textContent = 'Access Student Portal';
             }
         });
     </script>

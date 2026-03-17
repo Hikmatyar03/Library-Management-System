@@ -1,67 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Student & Faculty Portal — Manage your academic and professional information in one place.">
-  <title>Student & Faculty Portal</title>
+  <meta name="description" content="Student, Faculty, and Library Admin portal for academic and library management.">
+  <title>UniPortal</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <div class="hero">
-    <!-- Nav -->
     <nav class="hero-nav">
       <div style="display:flex;align-items:center;gap:10px;">
         <div style="width:38px;height:38px;background:linear-gradient(135deg,#2563EB,#6366f1);border-radius:10px;display:flex;align-items:center;justify-content:center;">
-          <span style="font-size:18px;">🎓</span>
+          <span style="font-size:18px;">UP</span>
         </div>
         <div>
           <div style="font-size:15px;font-weight:800;color:#0f172a;letter-spacing:-0.3px;">UniPortal</div>
           <div style="font-size:11px;color:#94a3b8;font-weight:500;">Database Systems Project</div>
         </div>
       </div>
-      <div style="font-size:13px;color:#64748b;font-weight:500;">March 2026 — SRD v1.0</div>
+      <div style="font-size:13px;color:#64748b;font-weight:500;">March 2026 - Library Workflow Edition</div>
     </nav>
 
-    <!-- Hero Body -->
     <div class="hero-body">
-      <span class="hero-badge">🏫 Academic Management System</span>
+      <span class="hero-badge">Academic and Library Management System</span>
 
       <h1 class="hero-title">
         One Portal.<br>
-        <span>Two Worlds.</span>
+        <span>Three Roles.</span>
       </h1>
       <p class="hero-subtitle">
-        A unified web platform for students to manage academic records and faculty to oversee professional information — all backed by a secure relational database.
+        Students and faculty can request books, and the library admin can manage the catalog, assign librarians, and approve borrowing requests.
       </p>
 
-      <div class="portal-cards">
-        <!-- Student Card -->
+      <div class="portal-cards portal-cards-3" style="max-width:960px;">
         <a href="student-login.html" class="portal-card student">
           <div class="card-icon">
-            <span style="font-size:34px;">🎒</span>
+            <span style="font-size:34px;">ST</span>
           </div>
           <h3>Student Portal</h3>
-          <p>Register, view your academic profile, manage GPA, and track your enrolled courses.</p>
-          <div class="card-link">Enter Student Portal →</div>
+          <p>Manage your academic profile and request books from the library catalog.</p>
+          <div class="card-link">Enter Student Portal</div>
         </a>
 
-        <!-- Faculty Card -->
         <a href="faculty-login.html" class="portal-card faculty">
           <div class="card-icon">
-            <span style="font-size:34px;">👨‍🏫</span>
+            <span style="font-size:34px;">FA</span>
           </div>
           <h3>Faculty Portal</h3>
-          <p>Register, manage your professional profile, and browse the full student directory.</p>
-          <div class="card-link">Enter Faculty Portal →</div>
+          <p>Manage your professional profile and request books for teaching or research.</p>
+          <div class="card-link">Enter Faculty Portal</div>
+        </a>
+
+        <a href="library-admin-login.html" class="portal-card faculty">
+          <div class="card-icon">
+            <span style="font-size:34px;">LA</span>
+          </div>
+          <h3>Library Admin</h3>
+          <p>Add books, approve requests, and assign librarian access to faculty members.</p>
+          <div class="card-link">Open Admin Portal</div>
         </a>
       </div>
 
-      <!-- Footer note -->
       <p style="margin-top:48px;font-size:13px;color:#94a3b8;position:relative;z-index:1;">
-        Powered by Node.js · Express · MySQL · JWT Auth
+        Powered by Node.js, Express, and MySQL
       </p>
     </div>
   </div>
 </body>
+
 </html>

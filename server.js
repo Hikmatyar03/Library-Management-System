@@ -1,4 +1,4 @@
-// server.js — Express Application Entry Point
+// server.js - Express Application Entry Point
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -6,36 +6,53 @@ const path = require('path');
 
 const app = express();
 
-// ── Middleware ───────────────────────────────────────────────
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ── Static Files (Frontend) ──────────────────────────────────
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ── API Routes ───────────────────────────────────────────────
 app.use('/api/students', require('./routes/students'));
 app.use('/api/faculty', require('./routes/faculty'));
+app.use('/api/admin', require('./routes/admin'));
+app.use('/api/books', require('./routes/books'));
+app.use('/api/library', require('./routes/library'));
 
-// ── SPA Fallback — serve index.html for unknown routes ───────
 app.get('*', (req, res) => {
-    // Only fallback for non-API routes
-    if (!req.path.startsWith('/api')) {
-        res.sendFile(path.join(__dirname, 'public', 'index.html'));
-    } else {
-        res.status(404).json({ error: 'Endpoint not found' });
-    }
+  if (!req.path.startsWith('/api')) {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    return;
+  }
+
+  res.status(404).json({ error: 'Endpoint not found' });
 });
 
-// ── Global Error Handler ─────────────────────────────────────
 app.use((err, req, res, next) => {
-    console.error('Unhandled error:', err);
-    res.status(500).json({ error: 'Internal server error' });
+  console.error('Unhandled error:', err);
+  res.status(500).json({ error: 'Internal server error' });
 });
 
-// ── Start Server ─────────────────────────────────────────────
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`🚀  Portal server running → http://localhost:${PORT}`);
-});
+const START_PORT = Number.parseInt(process.env.PORT, 10) || 3000;
+const MAX_PORT_ATTEMPTS = 20;
+
+function startServer(port, attempt = 0) {
+  const server = app.listen(port);
+
+  server.once('listening', () => {
+    console.log(`Portal server running at http://localhost:${port}`);
+  });
+
+  server.once('error', (err) => {
+    if (err.code === 'EADDRINUSE' && attempt < MAX_PORT_ATTEMPTS) {
+      const nextPort = port + 1;
+      console.warn(`Port ${port} is already in use. Trying port ${nextPort}...`);
+      startServer(nextPort, attempt + 1);
+      return;
+    }
+
+    console.error(`Failed to start server on port ${port}:`, err.message);
+    process.exit(1);
+  });
+}
+
+startServer(START_PORT);

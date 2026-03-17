@@ -13,16 +13,13 @@ const router = express.Router();
 router.post('/register', async (req, res) => {
     try {
         const {
-            student_id, full_name, email, password,
+            student_id, full_name, email,
             program, enrollment_year, phone
         } = req.body;
 
         // Validation
-        if (!student_id || !full_name || !email || !password || !program || !enrollment_year) {
+        if (!student_id || !full_name || !email || !program || !enrollment_year) {
             return res.status(400).json({ error: 'All required fields must be provided.' });
-        }
-        if (password.length < 8) {
-            return res.status(400).json({ error: 'Password must be at least 8 characters.' });
         }
         const emailRx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRx.test(email)) {
@@ -39,8 +36,8 @@ router.post('/register', async (req, res) => {
             return res.status(409).json({ error: 'This Student ID is already in use.' });
         }
 
-        // Hash password & insert
-        const password_hash = await bcrypt.hash(password, 10);
+        // Insert with dummy password hash to satisfy DB constraint
+        const password_hash = 'NO_PASS';
         await db.query(
             `INSERT INTO students (student_id, full_name, email, password_hash, program, enrollment_year, phone)
        VALUES (?, ?, ?, ?, ?, ?, ?)`,
@@ -59,38 +56,27 @@ router.post('/register', async (req, res) => {
 // ─────────────────────────────────────────────────────────────
 router.post('/login', async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { student_id } = req.body;
 
-        if (!email || !password) {
-            return res.status(400).json({ error: 'Email and password are required.' });
+        if (!student_id) {
+            return res.status(400).json({ error: 'Student ID is required.' });
         }
 
-        const [rows] = await db.query('SELECT * FROM students WHERE email = ?', [email.toLowerCase()]);
+        const [rows] = await db.query('SELECT * FROM students WHERE student_id = ?', [student_id]);
         if (!rows.length) {
-            return res.status(400).json({ error: 'Invalid email or password.' });
+            return res.status(400).json({ error: 'Student ID not found in system.' });
         }
 
         const student = rows[0];
-        const valid = await bcrypt.compare(password, student.password_hash);
-        if (!valid) {
-            return res.status(400).json({ error: 'Invalid email or password.' });
-        }
-
-        const token = jwt.sign(
-            { id: student.student_id, role: 'student' },
-            process.env.JWT_SECRET,
-            { expiresIn: '24h' }
-        );
 
         res.json({
-            message: 'Login successful',
-            token,
+            message: 'Access granted',
             student_id: student.student_id,
             full_name: student.full_name
         });
     } catch (err) {
         console.error('Student login error:', err);
-        res.status(500).json({ error: 'Login failed. Please try again.' });
+        res.status(500).json({ error: 'Access failed. Please try again.' });
     }
 });
 

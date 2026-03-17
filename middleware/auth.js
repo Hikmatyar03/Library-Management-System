@@ -1,24 +1,20 @@
-// middleware/auth.js — JWT Verification Middleware
-const jwt = require('jsonwebtoken');
+// middleware/auth.js — Authentication Helper
+// Validates session via simple headers instead of JWT
 
 /**
- * Protects routes by verifying the Bearer JWT token.
- * Attaches decoded user { id, role } to req.user.
+ * Protects routes by checking the X-User-Id header.
+ * Attaches user { id, role } to req.user.
  */
-function verifyToken(req, res, next) {
-    const authHeader = req.headers['authorization'];
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ error: 'Access denied. No token provided.' });
+function verifySession(req, res, next) {
+    const userId = req.headers['x-user-id'];
+    const role = req.headers['x-user-role'];
+
+    if (!userId || !role) {
+        return res.status(401).json({ error: 'Access denied. Session invalid.' });
     }
 
-    const token = authHeader.split(' ')[1];
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded; // { id, role } — id is student_id or employee_id
-        next();
-    } catch (err) {
-        return res.status(401).json({ error: 'Invalid or expired token. Please log in again.' });
-    }
+    req.user = { id: userId, role: role };
+    next();
 }
 
-module.exports = verifyToken;
+module.exports = verifySession;

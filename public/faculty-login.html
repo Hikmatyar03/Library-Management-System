@@ -22,18 +22,13 @@
 
             <form id="loginForm" novalidate>
                 <div class="form-group">
-                    <label for="email">Email Address <span class="required">*</span></label>
-                    <input type="email" id="email" name="email" class="form-control"
-                        placeholder="faculty@university.edu" autocomplete="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password <span class="required">*</span></label>
-                    <input type="password" id="password" name="password" class="form-control"
-                        placeholder="Enter your password" autocomplete="current-password" required>
+                    <label for="employee_id">Employee ID <span class="required">*</span></label>
+                    <input type="text" id="employee_id" name="employee_id" class="form-control"
+                        placeholder="FAC-2024-001" required>
                 </div>
                 <button type="submit" id="submitBtn" class="btn btn-primary"
                     style="margin-top:8px;background:linear-gradient(135deg,#6366f1,#4f46e5);">
-                    Sign In to Faculty Portal
+                    Access Faculty Portal
                 </button>
             </form>
 
@@ -64,25 +59,24 @@
             e.preventDefault();
             document.getElementById('alertBox').className = 'alert alert-error alert-hidden';
 
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-            if (!email || !password) { showAlert('Please enter your email and password.'); return; }
+            const employee_id = document.getElementById('employee_id').value.trim();
+            if (!employee_id) { showAlert('Please enter your Employee ID.'); return; }
 
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
-            btn.innerHTML = '<span class="spinner"></span> Signing in…';
+            btn.innerHTML = '<span class="spinner"></span> Accessing portal…';
 
-            const res = await FacultyAPI.login({ email, password });
+            const res = await FacultyAPI.login({ employee_id });
             if (!res) return;
 
             if (res.ok) {
-                Auth.setToken(res.data.token);
+                Auth.setUserId(res.data.employee_id);
                 Auth.setRole('faculty');
                 window.location.href = 'faculty-dashboard.html';
             } else {
-                showAlert(res.data.error || 'Login failed. Please try again.');
+                showAlert(res.data.error || 'Access failed. Please try again.');
                 btn.disabled = false;
-                btn.textContent = 'Sign In to Faculty Portal';
+                btn.textContent = 'Access Faculty Portal';
             }
         });
     </script>

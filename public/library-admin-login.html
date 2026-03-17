@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Admin Login - UniPortal</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="api.js"></script>
+</head>
+
+<body>
+    <div class="page-center">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <div class="icon">LA</div>
+                <h2>Library Admin Login</h2>
+                <p>Approve requests and assign librarians</p>
+            </div>
+
+            <div id="alertBox" class="alert alert-error alert-hidden" role="alert"></div>
+
+            <form id="loginForm" novalidate>
+                <div class="form-group">
+                    <label for="admin_id">Admin ID <span class="required">*</span></label>
+                    <input type="text" id="admin_id" class="form-control" placeholder="LIB-ADMIN-001" required>
+                </div>
+
+                <button type="submit" id="submitBtn" class="btn btn-primary"
+                    style="margin-top:8px;background:linear-gradient(135deg,#6366f1,#4f46e5);">
+                    Access Library Admin Portal
+                </button>
+            </form>
+
+            <div class="divider">Default Admin ID</div>
+            <div class="text-center">
+                <p class="text-muted"><strong>LIB-ADMIN-001</strong></p>
+                <p class="text-muted mt-4">
+                    <a href="index.html" style="color:#94a3b8;">Back to Home</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        if (Auth.isLoggedIn() && Auth.getRole() === 'library_admin') {
+            window.location.href = 'library-admin-dashboard.html';
+        }
+
+        function showAlert(msg) {
+            const box = document.getElementById('alertBox');
+            box.className = 'alert alert-error';
+            box.textContent = msg;
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            document.getElementById('alertBox').className = 'alert alert-error alert-hidden';
+
+            const admin_id = document.getElementById('admin_id').value.trim();
+            if (!admin_id) {
+                showAlert('Please enter the library admin ID.');
+                return;
+            }
+
+            const button = document.getElementById('submitBtn');
+            button.disabled = true;
+            button.innerHTML = '<span class="spinner"></span> Accessing portal...';
+
+            const res = await AdminAPI.login({ admin_id });
+            if (res && res.ok) {
+                Auth.setUserId(res.data.admin_id);
+                Auth.setRole('library_admin');
+                window.location.href = 'library-admin-dashboard.html';
+                return;
+            }
+
+            button.disabled = false;
+            button.textContent = 'Access Library Admin Portal';
+            showAlert((res && res.data.error) || 'Login failed. Please try again.');
+        });
+    </script>
+</body>
+
+</html>

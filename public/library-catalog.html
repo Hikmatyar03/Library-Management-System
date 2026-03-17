@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Catalog - UniPortal</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="api.js"></script>
+    <script src="library-catalog.js" defer></script>
+</head>
+
+<body class="dashboard-body">
+    <nav class="navbar">
+        <a href="index.html" class="navbar-brand">
+            <span class="brand-icon">LC</span>
+            Library Catalog
+        </a>
+        <div class="navbar-user">
+            <a id="backLink" href="student-dashboard.html" class="btn btn-sm nav-action-btn">Back to Dashboard</a>
+            <span class="user-name" id="navName">Loading...</span>
+            <button onclick="doLogout()" class="btn btn-sm"
+                style="background:rgba(255,255,255,0.18);color:#fff;border:1px solid rgba(255,255,255,0.3);">
+                Logout
+            </button>
+        </div>
+    </nav>
+
+    <div class="dashboard-wrap">
+        <div class="section-card">
+            <div class="section-body">
+                <div class="page-intro">
+                    <div class="page-intro-copy">
+                        <span class="hero-badge" style="margin-bottom:14px;">Borrow Books</span>
+                        <h1 class="page-title">Request books for library admin approval.</h1>
+                        <p class="page-subtitle">
+                            Students and faculty can browse the catalog here, submit requests, and track approval status.
+                        </p>
+                    </div>
+                    <div class="book-summary-grid">
+                        <div class="summary-tile">
+                            <span>Total Books</span>
+                            <strong id="summaryBooks">0</strong>
+                        </div>
+                        <div class="summary-tile">
+                            <span>Available Copies</span>
+                            <strong id="summaryAvailable">0</strong>
+                        </div>
+                        <div class="summary-tile">
+                            <span>Pending</span>
+                            <strong id="summaryPending">0</strong>
+                        </div>
+                        <div class="summary-tile">
+                            <span>Approved</span>
+                            <strong id="summaryApproved">0</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <div class="section-header catalog-header">
+                <div>
+                    <h3>Available Library Books</h3>
+                    <p class="section-caption" id="catalogCaption">Loading books...</p>
+                </div>
+            </div>
+            <div class="section-body">
+                <div class="catalog-toolbar">
+                    <div class="catalog-toolbar-group catalog-toolbar-search">
+                        <input type="text" id="searchInput" class="search-input"
+                            placeholder="Search by title, author, category, or ISBN">
+                    </div>
+                    <div class="catalog-toolbar-group">
+                        <select id="sortBy" class="form-control toolbar-select">
+                            <option value="title">Sort by Title</option>
+                            <option value="author">Sort by Author</option>
+                        </select>
+                    </div>
+                    <div class="catalog-toolbar-group">
+                        <select id="sortDir" class="form-control toolbar-select">
+                            <option value="ASC">Ascending</option>
+                            <option value="DESC">Descending</option>
+                        </select>
+                    </div>
+                    <div class="catalog-toolbar-group">
+                        <button type="button" class="btn btn-outline btn-sm" onclick="clearFilters()">Clear</button>
+                    </div>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Book</th>
+                                <th>Author</th>
+                                <th>Category</th>
+                                <th>ISBN</th>
+                                <th>Available</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookTableBody">
+                            <tr>
+                                <td colspan="7" class="table-empty">Loading books...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination" id="paginationWrap"></div>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <div class="section-header">
+                <div>
+                    <h3>My Book Requests</h3>
+                    <p class="section-caption">Track the approval status of your borrowing requests.</p>
+                </div>
+            </div>
+            <div class="section-body">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Request ID</th>
+                                <th>Book</th>
+                                <th>Status</th>
+                                <th>Requested</th>
+                                <th>Admin Note</th>
+                            </tr>
+                        </thead>
+                        <tbody id="requestTableBody">
+                            <tr>
+                                <td colspan="5" class="table-empty">Loading requests...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast"></div>
+</body>
+
+</html>
